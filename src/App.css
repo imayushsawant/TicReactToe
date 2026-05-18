@@ -1,0 +1,564 @@
+/* ═══════════════════════════════════════════════════════════
+   TIC-REACT-TOE  ·  Component Styles
+   Homepage, Game Board, Cells, Status
+   ═══════════════════════════════════════════════════════════ */
+
+/* ──────────────────────────────────────────────────────────
+   HOMEPAGE — Start Game Button
+   ────────────────────────────────────────────────────────── */
+
+/* Entrance animation for the homepage button */
+@keyframes heroEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes borderGlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* The homepage wraps just a <button> in a fragment. We target it via its parent. */
+button {
+  all: unset;
+  cursor: pointer;
+}
+
+/* "Start Game" button on homepage — the only root-level button not inside #container */
+#root > button,
+#root > *:not(h1):not(#container) button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-bright);
+
+  padding: 18px 52px;
+  border-radius: var(--radius-lg);
+
+  /* Glassmorphism bg */
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.12) 0%,
+    rgba(180, 74, 255, 0.12) 50%,
+    rgba(255, 45, 149, 0.10) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Animated gradient border */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 0 0 2px rgba(0, 240, 255, 0.2),
+    var(--glow-cyan);
+
+  animation: heroEntrance 0.8s var(--ease-spring) both;
+  animation-delay: 0.3s;
+
+  transition:
+    transform var(--dur-med) var(--ease-spring),
+    box-shadow var(--dur-med) var(--ease-smooth),
+    background var(--dur-med);
+}
+
+#root > button:hover,
+#root > *:not(h1):not(#container) button:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 0 0 2px rgba(180, 74, 255, 0.4),
+    var(--glow-purple),
+    0 20px 50px -12px rgba(180, 74, 255, 0.25);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.18) 0%,
+    rgba(180, 74, 255, 0.2) 50%,
+    rgba(255, 45, 149, 0.15) 100%
+  );
+}
+
+#root > button:active,
+#root > *:not(h1):not(#container) button:active {
+  transform: translateY(-1px) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* Pulse ring behind Start Game button */
+#root > button::before,
+#root > *:not(h1):not(#container) button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--neon-cyan);
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  animation: pulseRing 2.5s ease-out infinite;
+  pointer-events: none;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   GAME BOARD
+   ────────────────────────────────────────────────────────── */
+
+@keyframes boardSlideIn {
+  0% {
+    opacity: 0;
+    transform: perspective(800px) rotateX(8deg) translateY(40px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(800px) rotateX(0) translateY(0) scale(1);
+  }
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: boardSlideIn 0.7s var(--ease-spring) both;
+
+  /* Glass card */
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  position: relative;
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 30px 80px -20px rgba(0, 0, 0, 0.5),
+    0 0 80px -20px rgba(0, 240, 255, 0.08);
+}
+
+/* Subtle top-edge shine */
+#container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.4) 30%,
+    rgba(180, 74, 255, 0.4) 70%,
+    transparent 100%
+  );
+  border-radius: 1px;
+}
+
+/* Each row of 3 cells */
+#container > div:not(:last-child) {
+  display: flex;
+  gap: 0;
+}
+
+/* ──────────────────────────────────────────────────────────
+   CELLS / CHECKBOXES
+   ────────────────────────────────────────────────────────── */
+
+@keyframes cellAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes stampIn {
+  0% {
+    opacity: 0;
+    transform: scale(2.5) rotate(-15deg);
+    filter: blur(4px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(0.85) rotate(3deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    filter: blur(0);
+  }
+}
+
+.checkboxes {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 110px;
+  height: 110px;
+  position: relative;
+
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.6rem;
+  color: var(--text-bright);
+
+  /* Cell background */
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  transition:
+    background var(--dur-fast),
+    border-color var(--dur-fast),
+    transform var(--dur-med) var(--ease-spring),
+    box-shadow var(--dur-med);
+
+  animation: cellAppear 0.5s var(--ease-spring) both;
+}
+
+/* Stagger cell animations */
+.checkboxes:nth-child(1) { animation-delay: 0.05s; }
+.checkboxes:nth-child(2) { animation-delay: 0.1s;  }
+.checkboxes:nth-child(3) { animation-delay: 0.15s; }
+
+#container > div:nth-child(2) .checkboxes:nth-child(1) { animation-delay: 0.2s;  }
+#container > div:nth-child(2) .checkboxes:nth-child(2) { animation-delay: 0.25s; }
+#container > div:nth-child(2) .checkboxes:nth-child(3) { animation-delay: 0.3s;  }
+
+#container > div:nth-child(3) .checkboxes:nth-child(1) { animation-delay: 0.35s; }
+#container > div:nth-child(3) .checkboxes:nth-child(2) { animation-delay: 0.4s;  }
+#container > div:nth-child(3) .checkboxes:nth-child(3) { animation-delay: 0.45s; }
+
+/* Rounded corners on the four corner cells */
+#container > div:first-child .checkboxes:first-child { border-radius: var(--radius-md) 0 0 0; }
+#container > div:first-child .checkboxes:last-child  { border-radius: 0 var(--radius-md) 0 0; }
+#container > div:nth-child(3) .checkboxes:first-child { border-radius: 0 0 0 var(--radius-md); }
+#container > div:nth-child(3) .checkboxes:last-child  { border-radius: 0 0 var(--radius-md) 0; }
+
+/* Hover — empty cells glow (colour shifts with turn) */
+.checkboxes[data-mark=""]:hover,
+.checkboxes:not([data-mark]):hover {
+  transform: scale(1.06);
+}
+
+/* Player 1's turn → cyan hover */
+#container[data-turn="1"] .checkboxes[data-mark=""]:hover,
+#container:not([data-turn]) .checkboxes:hover {
+  background: rgba(0, 240, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.2);
+  box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.06);
+}
+
+/* Player 2's turn → pink hover */
+#container[data-turn="2"] .checkboxes[data-mark=""]:hover {
+  background: rgba(255, 45, 149, 0.06);
+  border-color: rgba(255, 45, 149, 0.2);
+  box-shadow: inset 0 0 30px rgba(255, 45, 149, 0.06);
+}
+
+/* Active press */
+.checkboxes:active {
+  transform: scale(0.95);
+  transition-duration: 0.08s;
+}
+
+/* Filled cell — stamp animation, no pointer */
+.checkboxes[data-mark="X"],
+.checkboxes[data-mark="O"] {
+  animation: stampIn 0.35s var(--ease-spring) both;
+  cursor: default;
+}
+
+/* ── X MARKS — Neon Cyan ────────────────────────────────── */
+.checkboxes[data-mark="X"] {
+  color: var(--neon-cyan);
+  text-shadow:
+    0 0 8px rgba(0, 240, 255, 0.6),
+    0 0 25px rgba(0, 240, 255, 0.3);
+}
+
+.checkboxes[data-mark="X"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.1;
+  background: radial-gradient(circle at center, var(--neon-cyan), transparent 70%);
+}
+
+/* ── O MARKS — Neon Pink ────────────────────────────────── */
+.checkboxes[data-mark="O"] {
+  color: var(--neon-pink);
+  text-shadow:
+    0 0 8px rgba(255, 45, 149, 0.6),
+    0 0 25px rgba(255, 45, 149, 0.3);
+}
+
+.checkboxes[data-mark="O"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.1;
+  background: radial-gradient(circle at center, var(--neon-pink), transparent 70%);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   STATUS / TURN INDICATOR
+   ────────────────────────────────────────────────────────── */
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes winCelebration {
+  0%   { transform: scale(1);    filter: brightness(1); }
+  25%  { transform: scale(1.08); filter: brightness(1.3); }
+  50%  { transform: scale(1);    filter: brightness(1); }
+  75%  { transform: scale(1.04); filter: brightness(1.2); }
+  100% { transform: scale(1);    filter: brightness(1); }
+}
+
+#container > div:last-child {
+  margin-top: 20px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  min-width: 240px;
+  animation: fadeSlideUp 0.5s var(--ease-spring) both;
+  animation-delay: 0.55s;
+  transition:
+    background var(--dur-med) var(--ease-smooth),
+    border-color var(--dur-med) var(--ease-smooth),
+    box-shadow var(--dur-med) var(--ease-smooth);
+}
+
+#container > div:last-child p {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.8px;
+  line-height: 1.4;
+  transition: color var(--dur-med), text-shadow var(--dur-med);
+}
+
+/* ── Player 1's Turn — Cyan accent ─────────────────────── */
+#container[data-turn="1"] > div:last-child {
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.08),
+    inset 0 0 20px rgba(0, 240, 255, 0.03);
+}
+
+#container[data-turn="1"] > div:last-child p {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+}
+
+/* ── Player 2's Turn — Pink accent ─────────────────────── */
+#container[data-turn="2"] > div:last-child {
+  background: rgba(255, 45, 149, 0.06);
+  border: 1px solid rgba(255, 45, 149, 0.2);
+  box-shadow:
+    0 0 20px rgba(255, 45, 149, 0.08),
+    inset 0 0 20px rgba(255, 45, 149, 0.03);
+}
+
+#container[data-turn="2"] > div:last-child p {
+  color: var(--neon-pink);
+  text-shadow: 0 0 12px rgba(255, 45, 149, 0.4);
+}
+
+/* ── Game Over — Winner celebration ────────────────────── */
+@keyframes winPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(74, 255, 128, 0.1), inset 0 0 20px rgba(74, 255, 128, 0.03); }
+  50%      { box-shadow: 0 0 35px rgba(74, 255, 128, 0.2), inset 0 0 30px rgba(74, 255, 128, 0.06); }
+}
+
+#container[data-over="true"] > div:last-child {
+  background: rgba(74, 255, 128, 0.08);
+  border: 1px solid rgba(74, 255, 128, 0.3);
+  animation: winPulse 1.5s ease-in-out infinite;
+}
+
+#container[data-over="true"] > div:last-child p {
+  color: #4aff80;
+  text-shadow: 0 0 15px rgba(74, 255, 128, 0.5);
+  animation: winCelebration 1s ease-in-out;
+}
+
+/* Fallback for no data attributes (before JS changes) */
+#container:not([data-turn]) > div:last-child {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+#container:not([data-turn]) > div:last-child p {
+  color: var(--text-primary);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   RESPONSIVE
+   ────────────────────────────────────────────────────────── */
+
+@media (max-width: 500px) {
+  .checkboxes {
+    width: 85px;
+    height: 85px;
+    font-size: 2rem;
+  }
+
+  #container {
+    padding: 18px;
+    border-radius: var(--radius-lg);
+  }
+
+  #container > div:last-child {
+    padding: 10px 20px;
+    min-width: unset;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .checkboxes {
+    width: 72px;
+    height: 72px;
+    font-size: 1.6rem;
+  }
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   GRID LINES — visible dividers between cells
+   ────────────────────────────────────────────────────────── */
+
+/* Vertical separators */
+#container > div:not(:last-child) .checkboxes:not(:last-child) {
+  border-right-color: rgba(0, 240, 255, 0.12);
+}
+
+/* Horizontal separators */
+#container > div:not(:last-child):not(:nth-last-child(2)) .checkboxes {
+  border-bottom-color: rgba(0, 240, 255, 0.12);
+}
+
+/* Second row bottom border */
+#container > div:nth-child(2) .checkboxes {
+  border-bottom-color: rgba(0, 240, 255, 0.12);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   SELECTION HIGHLIGHT — focus-visible accessibility
+   ────────────────────────────────────────────────────────── */
+.checkboxes:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: -2px;
+  box-shadow:
+    0 0 0 4px rgba(0, 240, 255, 0.15),
+    inset 0 0 20px rgba(0, 240, 255, 0.05);
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   AMBIENT FLOATING ORB (behind the board via #container)
+   ────────────────────────────────────────────────────────── */
+@keyframes orbFloat {
+  0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.5; }
+  50%  { transform: translate(-50%, -55%) scale(1.15); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.5; }
+}
+
+#container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(180, 74, 255, 0.08) 0%,
+    rgba(0, 240, 255, 0.04) 40%,
+    transparent 70%
+  );
+  z-index: -1;
+  pointer-events: none;
+  animation: orbFloat 6s ease-in-out infinite;
+}
+
+
+/* ──────────────────────────────────────────────────────────
+   MISC — smooth scrollbar, selection colour
+   ────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 240, 255, 0.25);
+  color: var(--text-bright);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.35);
+}
